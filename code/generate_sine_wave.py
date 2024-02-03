@@ -19,7 +19,7 @@ def generate_and_write(sample_rate, duration_sec, frequencies, amplitudes=None, 
     if add_noise == True:
         filename = 'noise_' + filename
     # Write to a WAV file
-    wavfile.write('Sounds/Dirbtiniai/' + filename, sample_rate, signal_normalized)
+    wavfile.write('data/Sounds/Dirbtiniai/' + filename, sample_rate, signal_normalized)
 
 # Sample rate, duration and frequencies
 sample_rate = 44100  # Sample rate in Hz
