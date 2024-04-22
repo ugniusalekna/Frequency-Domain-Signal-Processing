@@ -14,13 +14,11 @@ from functions.plotting import *
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Create main GUI window
 root = tk.Tk()
 root.title('WAV File Reader')
 root.resizable(False, False)
 root.geometry('300x125')
 def on_root_close():
-    # Define root closing protocol
     plt.close('all')
     if os.path.exists('temp'):
         for filename in os.listdir('temp'):
@@ -36,17 +34,14 @@ root.protocol('WM_DELETE_WINDOW', on_root_close)
 
 
 def open_file():
-    # Create dialog window to select wav files 
     file_path = filedialog.askopenfilename(
         filetypes=(
             ("wav files", "*.wav"),
             ("all files", "*.*")))
     if file_path:
-        # Create folder for temp files
         if not os.path.exists('temp'):
             os.mkdir('temp')
         
-        # Read WAV file and get attributes
         sample_rate, signal_data = wavfile.read(file_path, 'r')
         wave_object = wave.open(file_path, mode='r')
         num_of_channels = wave_object.getnchannels()
@@ -80,10 +75,8 @@ def pause_audio():
     winsound.PlaySound(None, 0)
 
 def write_file(sample_rate, signal_data, output_filename):
-    # Write the NumPy array as a WAV file
-    output_file = 'temp\\' + output_filename + '.wav'  # Output WAV file name
+    output_file = 'temp\\' + output_filename + '.wav' 
     wavfile.write(output_file, sample_rate, signal_data.astype(np.float32))
-    # Get full path to the written temporary audio file
     script_path = os.path.dirname(os.path.abspath(__file__))
     file_path = script_path + '\\' + output_file
 
@@ -121,12 +114,9 @@ def ask_segment_time_input(file_path, sample_rate, signal_data):
     tk.Button(segment_window, text="Pause Audio", command=lambda: pause_audio(), height=1, width=10).grid(row=3, column=2, padx=10, pady=5)
     tk.Button(segment_window, text='OK', command=on_closing, height=1, width=10).grid(row=4, column=2, padx=10, pady=5)
 
-    # Configure columns to center the displayed widgets 
     segment_window.grid_columnconfigure(0, weight=1)
     segment_window.grid_columnconfigure(1, weight=1)
     segment_window.grid_columnconfigure(2, weight=1)
-
-    # Wait for the dialog window to close
     segment_window.wait_window()
 
     if start_time.get() and time_unit.get():
@@ -201,7 +191,6 @@ def process_signal_options(sample_rate, signal_data, wav_info):
         file_path_processed = write_file(sample_rate, modified_signal, output_filename="processed_audio")
         play_audio_files(wav_info[0], file_path_original, file_path_processed)
 
-        # Plot processed signal and its amplitude spectrum
         plot_signal(sample_rate, modified_signal, truncated_amplitude_modified, wav_info, title=f"'{processing_method}' Applied to File {wav_info[0]}")
 
     # Processing selection window
@@ -210,7 +199,6 @@ def process_signal_options(sample_rate, signal_data, wav_info):
     processing_window.geometry('300x175')
     processing_window.resizable(False, False)
 
-    # Labels and Entries for the widgets
     processing_method_var = tk.StringVar()
     processing_method_var.trace('w', update_processing_options) # Trace variable to update window with new widgets
     processing_method_label = ttk.Label(processing_window, text='Processing Method:')
@@ -270,16 +258,13 @@ def play_audio_files(file_name, path_original, path_processed):
         audio_window.destroy()
     audio_window.protocol("WM_DELETE_WINDOW", on_closing)  # Intercept window closing event
 
-    # Display the audio file name
     audio_filename_label = tk.Label(audio_window, text=f"Selected Audio: {file_name}")
     audio_filename_label.pack()
     audio_filename_label.configure(anchor="center")
 
-    # Display the duration of the audio
     signal_duration_label = tk.Label(audio_window, text=f"Signal Duration: 200 ms")
     signal_duration_label.pack()
     
-    # Create widgets for playing/pausing original and processed audio
     play_original_button = tk.Button(audio_window, text="Play Original Audio", command=lambda: play_audio(path_original), width=20)
     play_original_button.pack(pady=(5, 0), padx=10)
     modulate_button = tk.Button(audio_window, text="Play Processed Audio", command=lambda: play_audio(path_processed), width=20)
@@ -288,8 +273,6 @@ def play_audio_files(file_name, path_original, path_processed):
     pause_button.pack(pady=(0, 5), padx=10)
 
 
-# Create a button widget that triggers 'open_file'
 open_button = tk.Button(root, text='Read WAV File', command=open_file, height=2, width=15)
 open_button.pack(expand=True, pady=20)
-# Start the tkinter mainloop, which keeps GUI responsive
 root.mainloop()
